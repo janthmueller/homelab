@@ -1,0 +1,17 @@
+services:
+  trilium:
+    image: triliumnext/notes:latest
+    restart: unless-stopped
+    ports:
+      - '8181:8080'
+    labels:
+      tsdproxy.enable: "true"
+      tsdproxy.name: "triliumnext"
+      tsdproxy.ephemeral: "false"
+    volumes:
+      - trilium_data:/home/node/trilium-data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+volumes:
+  trilium_data:

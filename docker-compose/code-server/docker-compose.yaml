@@ -1,0 +1,21 @@
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000  # Replace with your user ID
+      - PGID=1000  # Replace with your group ID
+      - TZ=Europe/Berlin  # Set your timezone
+    volumes:
+      - config_data:/config
+      - projects_data:/home/coder/projects
+    labels:
+      tsdproxy.enable: "true"
+      tsdproxy.name: "code-server"
+      tsdproxy.ephemeral: "false"
+    ports:
+      - 8443:8443
+    restart: unless-stopped
+volumes:
+  config_data:
+  projects_data:

@@ -1,0 +1,21 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - homeassistant_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "8123:8123"
+    labels:
+      tsdproxy.enable: "true"
+      tsdproxy.name: "homeassistant"
+      tsdproxy.ephemeral: "false"
+
+    devices:
+      - /dev/ttyUSB0:/dev/ttyACM0
+
+volumes:
+    homeassistant_config:

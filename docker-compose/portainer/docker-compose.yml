@@ -1,0 +1,20 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    command: "--http-enabled"
+    labels:
+      tsdproxy.enable: "true"
+      tsdproxy.name: "portainer"
+      tsdproxy.ephemeral: "false"
+      tsdproxy.to: "http://portainer:9443"
+
+volumes:
+  portainer_data:
