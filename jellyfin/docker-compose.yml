@@ -1,0 +1,27 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000  # Replace with your user ID
+      - PGID=1000  # Replace with your group ID
+      - TZ=Europe/Berlin  # Set to your local timezone
+      - JELLYFIN_PublishedServerUrl=http://192.168.2.144/  # Your server's LAN IP
+    volumes:
+      - /srv/jellyfin/config:/config  # Configuration and metadata storage
+      - /srv/media/movies:/data/movies  # Movies library
+      - /srv/media/series:/data/series  # Series library
+      - /srv/media/music:/data/music  # Music library
+      - /srv/media/photos:/data/photos  # Photos library
+    ports:
+      - 8096:8096  # HTTP Web UI and API
+      - 8920:8920  # HTTPS (optional, requires SSL setup)
+      - 7359:7359/udp  # Auto-discovery (optional)
+      - 1900:1900/udp  # DLNA (optional)
+    devices:
+      - /dev/dri:/dev/dri  # For Intel QuickSync hardware acceleration
+    restart: unless-stopped
+    labels:
+      tsdproxy.enable: "true"
+      tsdproxy.name: "jellyfin"
+      tsdproxy.ephemeral: "false"
