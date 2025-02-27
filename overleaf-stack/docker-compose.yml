@@ -29,7 +29,7 @@ services:
       - overleaf-net
 
   overleaf:
-    image: sharelatex/sharelatex
+    image: overleaf-texlive-full
     container_name: overleaf
     depends_on:
       mongo:
@@ -41,7 +41,6 @@ services:
     environment:
       OVERLEAF_MONGO_URL: mongodb://mongo:27017/sharelatex
       OVERLEAF_REDIS_HOST: redis
-      OVERLEAF_SITE_URL: "http://192.168.2.144:8081"
       OVERLEAF_ADMIN_EMAIL: "mail@jantmueller.com"
       ENABLED_LINKED_ACCOUNTS: "github"
       EMAIL_CONFIRMATION_DISABLED: 'true'
