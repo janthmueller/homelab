@@ -1,0 +1,63 @@
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: overleaf-mongo
+    command: ["mongod", "--replSet", "overleaf", "--bind_ip_all"]
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: |
+        echo 'rs.initiate({
+          _id: "overleaf",
+          members: [{ _id: 0, host: "overleaf-mongo:27017" }]
+        })' | mongosh --quiet || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - overleaf-net
+
+  redis:
+    image: redis:6.2
+    container_name: overleaf-redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - overleaf-net
+
+  overleaf:
+    image: sharelatex/sharelatex
+    container_name: overleaf
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "8081:80"
+    environment:
+      OVERLEAF_MONGO_URL: mongodb://mongo:27017/sharelatex
+      OVERLEAF_REDIS_HOST: redis
+      OVERLEAF_SITE_URL: "http://192.168.2.144:8081"
+      OVERLEAF_ADMIN_EMAIL: "mail@jantmueller.com"
+      ENABLED_LINKED_ACCOUNTS: "github"
+      EMAIL_CONFIRMATION_DISABLED: 'true'
+    labels:
+      tsdproxy.enable: "true"
+      tsdproxy.name: "overleaf"
+      tsdproxy.ephemeral: "false"
+    volumes:
+      - overleaf_data:/var/lib/overleaf
+    networks:
+      - overleaf-net
+
+volumes:
+  mongo_data:
+  redis_data:
+  overleaf_data:
+
+networks:
+  overleaf-net:
